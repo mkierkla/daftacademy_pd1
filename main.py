@@ -52,10 +52,8 @@ def wyswietl_pacjenta(rq: wez_pacjent):
 @app.get('patient/{pk}')
 def znajdz_pacjetna(pk: int):
 	global patients
-	
-	if pk not in [i.id for i in patients]:
-       return JSONResponse(status_code = 204, content = {}) 
-
+	if pk not in [ziomek.id for ziomek in patients]:
+		return JSONResponse(status_code = 204, content ={})
 	return patients[pk].patient
 
 #wyklad
