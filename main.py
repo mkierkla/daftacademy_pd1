@@ -35,11 +35,11 @@ class wez_pacjent(BaseModel):
 
 class daj_pacjent(BaseModel):
 	id: int
-	pacjent: wez_pacjent
+	patient: wez_pacjent
 
 @app.post('/patient', response_model=daj_pacjent)
 def wyswietl_pacjenta(rq: wez_pacjent):
-	gosciu = daj_pacjent(id=app.counter, pacjent=rq)
+	gosciu = daj_pacjent(id=app.counter, patient=rq)
 	app.counter += 1
 	return gosciu
 
