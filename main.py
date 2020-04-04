@@ -28,7 +28,7 @@ async def what_method(request: Request):
 	return {"method": used_method}
 
 #zadanie3
-
+global patients
 patients = []
 
 class wez_pacjent(BaseModel):
@@ -41,7 +41,7 @@ class daj_pacjent(BaseModel):
 
 @app.post('/patient', response_model=daj_pacjent)
 def wyswietl_pacjenta(rq: wez_pacjent):
-	global patients
+	#global patients
 	gosciu = daj_pacjent(id=app.counter, patient=rq)
 	patients.append(gosciu)
 	app.counter += 1
@@ -51,7 +51,7 @@ def wyswietl_pacjenta(rq: wez_pacjent):
 
 @app.get('patient/{pk}')
 def znajdz_pacjetna(pk: int):
-	global patients
+	#global patients
 	if pk not in [ziomek.id for ziomek in patients]:
 		return JSONResponse(status_code = 204, content ={})
 	return patients[pk].patient
