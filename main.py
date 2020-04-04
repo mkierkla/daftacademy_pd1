@@ -28,6 +28,7 @@ async def what_method(request: Request):
 	return {"method": used_method}
 
 #zadanie3
+patients = []
 
 class wez_pacjent(BaseModel):
 	name: str
@@ -40,9 +41,19 @@ class daj_pacjent(BaseModel):
 @app.post('/patient', response_model=daj_pacjent)
 def wyswietl_pacjenta(rq: wez_pacjent):
 	gosciu = daj_pacjent(id=app.counter, patient=rq)
+	patients.append(gosciu)
 	app.counter += 1
 	return gosciu
 
+#zadanie 4
+
+@app.get('patient/{pk}')
+def znajdz_pacjetna(rq: int):
+
+	if pk not in [i.id for i in patients]:
+       return JSONResponse(status_code = 204, content = {}) 
+
+	return patients(pk).patient
 
 #wyklad
 @app.get('hello/{name}')
