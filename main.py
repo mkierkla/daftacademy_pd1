@@ -28,6 +28,7 @@ async def what_method(request: Request):
 	return {"method": used_method}
 
 #zadanie3
+global patients
 patients = []
 
 class wez_pacjent(BaseModel):
