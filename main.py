@@ -30,8 +30,8 @@ async def what_method(request: Request):
 #zadanie3
 
 class wez_pacjent(BaseModel):
-	imie: str
-	nazwisko: str
+	name: str
+	surename: str
 
 class daj_pacjent(BaseModel):
 	id: int
