@@ -54,7 +54,7 @@ def znajdz_pacjetna(pk: int):
 	if pk not in [i.id for i in patients]:
        return JSONResponse(status_code = 204, content = {}) 
 
-	return patients(pk).patient
+	return patients[pk].patient
 
 #wyklad
 @app.get('hello/{name}')
