@@ -49,7 +49,7 @@ def wyswietl_pacjenta(rq: wez_pacjent):
 #zadanie 4
 
 @app.get('patient/{pk}')
-def znajdz_pacjetna(rq: int):
+def znajdz_pacjetna(pk: int):
 
 	if pk not in [i.id for i in patients]:
        return JSONResponse(status_code = 204, content = {}) 
