@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from starlette.routing import Route
 from pydantic import BaseModel
 
@@ -36,7 +37,7 @@ class daj_pacjent(BaseModel):
 	id: int
 	pacjent: wez_pacjent
 
-@app.post('/patient', response_model=wez_pacjent)
+@app.post('/patient', response_model=daj_pacjent)
 def wyswietl_pacjenta(rq: wez_pacjent):
 	gosciu = daj_pacjent(id=app.counter, pacjent=rq)
 	app.counter += 1
