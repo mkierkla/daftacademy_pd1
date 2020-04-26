@@ -42,7 +42,9 @@ def get_current_user(response: Response, credentials: HTTPBasicCredentials = Dep
 @app.post('/login')
 def login(response: Response, cookie: str = Depends(get_current_user)):
     response.set_cookie(key = 'cookie', value = cookie)
-    return RedirectResponse(url='/welcome') 
+    return RedirectResponse(url='/welcome')
+    response.status_code = status.HTTP_302_FOUND
+    response.headers["Location"] = '/welcome'
 
 @app.post('/logout')
 def wylogowanie(response: Response):
