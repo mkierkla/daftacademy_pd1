@@ -58,8 +58,8 @@ def wylogowanie(response: Response):
 
 #@app.post('/welcome')
 @app.get('/welcome')
-def powitanie(request: Request):
-	if len(users)!=1:
+def powitanie(request: Request, response: Response):
+	if len(users)!=1 and len(app.sessions)!=1:
 		raise HTTPException(
 			status_code=status.HTTP_401_UNAUTHORIZED,
 			detail="Incorrect email or password",
