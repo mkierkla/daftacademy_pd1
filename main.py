@@ -19,8 +19,8 @@ security = HTTPBasic()
 @app.post('/login')
 def logowanie(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
 	#sprawdzam czy dobre passy
-	correct_username = secrets.compare_digest(credentials.username, "gosc")
-	correct_password = secrets.compare_digest(credentials.password, "pass")
+	correct_username = secrets.compare_digest(credentials.username, "trudnY")
+	correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
 	#komunikat jak zle
 	if not (correct_username and correct_password):
 		raise HTTPException(
