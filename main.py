@@ -58,14 +58,13 @@ def wylogowanie(response: Response):
 
 #@app.post('/welcome')
 @app.get('/welcome')
-def powitanie(request: Request, response: Response):
-	if len(users)!=1 and len(app.sessions)!=1:
+def powitanie(request: Request, response: Response, cookie: str = Cookie(None)):
+	if cookie not in app.sessions:
 		raise HTTPException(
 			status_code=status.HTTP_401_UNAUTHORIZED,
 			detail="Incorrect email or password",
 			headers={"WWW-Authenticate": "Basic"},
 		)
-		print("brak zalogowanych uzytkownikow")
 	else:
 		return templates.TemplateResponse("item.html", {"request": request, "username": users[0]})
 
