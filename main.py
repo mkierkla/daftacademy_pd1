@@ -55,7 +55,7 @@ def wylogowanie(response: Response):
 		users.clear()
 		print("wylogowano")
 	return RedirectResponse(url='/')
-'''
+
 @app.post('/welcome')
 @app.get('/welcome')
 def powitanie(request: Request):
@@ -68,7 +68,7 @@ def powitanie(request: Request):
 		print("brak zalogowanych uzytkownikow")
 	else:
 		return templates.TemplateResponse("item.html", {"request": request, "username": users[0]})
-'''
+
 @app.post('/')
 @app.get('/')
 def hello_world():
