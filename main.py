@@ -17,9 +17,8 @@ app.sessions = []
 security = HTTPBasic()
 
 def get_current_user(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
-	user, passw = credentials.username, credentials.password
-	correct_username = secrets.compare_digest(user, "trudnY")
-	correct_password = secrets.compare_digest(password, "PaC13Nt")
+	correct_username = secrets.compare_digest(credentials.username, "trudnY")
+	correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
 	if not (correct_username and correct_password):
 		raise HTTPException(
 			status_code=status.HTTP_401_UNAUTHORIZED,
@@ -27,8 +26,8 @@ def get_current_user(response: Response, credentials: HTTPBasicCredentials = Dep
 			headers={"WWW-Authenticate": "Basic"},
 		)
 	else:
-		session_token = sha256(bytes(f"{user}{password}{app.secret_key}", encoding = 'utf8')).hexdigest()
-		app.session_token.clear()
+		session_token = sha256(bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding = 'utf8')).hexdigest()
+		app.sessions.clear()
 		app.sessions.append(session_token)
 		return session_token 
 
@@ -39,17 +38,21 @@ def login(response: Response, cookie: str = Depends(get_current_user)):
 
 @app.post('/logout')
 def wylogowanie(response: Response):
-	session_token = app.sessions[0]
-	response.delete_cookie(key="session_token", value=session_token)
-	app.sessions.clear()
+	if len(app.sessions)!=1:
+		pass
+	else:
+		session_token = app.sessions[0]
+		response.delete_cookie(key="session_token")
+		app.sessions.clear()
+		print("wylogowano")
 	return RedirectResponse(url='/')
 
 @app.post('/welcome')
 @app.get('/welcome')
 def powitanie():
 	return {"message": "jakis powitalny tekst"}
-
-#@app.post('welcome')
+	
+@app.post('/')
 @app.get('/')
 def hello_world():
 	return {"message": "Hello World during the coronavirus pandemic!"}
