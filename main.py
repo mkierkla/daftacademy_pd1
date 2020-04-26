@@ -3,6 +3,8 @@ import secrets
 from fastapi import FastAPI, Request, Response, Depends, status, HTTPException, Cookie
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+
 from starlette.routing import Route
 from pydantic import BaseModel
 from hashlib import sha256
@@ -14,9 +16,15 @@ app.secret_key = '432A462D4A614E645267556B58703273357538782F413F4428472B4B625025
 app.counter = 0
 app.sessions = []
 
+users = []
+
+templates = Jinja2Templates(directory="templates")
+
 security = HTTPBasic()
 
 def get_current_user(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+	users.clear()
+	users.append(credentials.username)
 	correct_username = secrets.compare_digest(credentials.username, "trudnY")
 	correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
 	if not (correct_username and correct_password):
@@ -44,14 +52,18 @@ def wylogowanie(response: Response):
 		session_token = app.sessions[0]
 		response.delete_cookie(key="session_token")
 		app.sessions.clear()
+		users.clear()
 		print("wylogowano")
 	return RedirectResponse(url='/')
 
 @app.post('/welcome')
 @app.get('/welcome')
-def powitanie():
-	return {"message": "jakis powitalny tekst"}
-	
+def powitanie(request: Request):
+	if len(users)!=1:
+		print("brak zalogowanych uzytkownikow")
+	else:
+		return templates.TemplateResponse("item.html", {"request": request, "username": users[0]})
+
 @app.post('/')
 @app.get('/')
 def hello_world():
