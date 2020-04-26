@@ -23,8 +23,6 @@ templates = Jinja2Templates(directory="templates")
 security = HTTPBasic()
 
 def get_current_user(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
-	users.clear()
-	users.append(credentials.username)
 	correct_username = secrets.compare_digest(credentials.username, "trudnY")
 	correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
 	if not (correct_username and correct_password):
@@ -34,6 +32,8 @@ def get_current_user(response: Response, credentials: HTTPBasicCredentials = Dep
 			headers={"WWW-Authenticate": "Basic"},
 		)
 	else:
+		users.clear()
+		users.append(credentials.username)
 		session_token = sha256(bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding = 'utf8')).hexdigest()
 		app.sessions.clear()
 		app.sessions.append(session_token)
@@ -56,7 +56,7 @@ def wylogowanie(response: Response):
 		print("wylogowano")
 	return RedirectResponse(url='/')
 
-@app.post('/welcome')
+#@app.post('/welcome')
 @app.get('/welcome')
 def powitanie(request: Request):
 	if len(users)!=1:
