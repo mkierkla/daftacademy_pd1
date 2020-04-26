@@ -34,9 +34,9 @@ def logowanie(response: Response, credentials: HTTPBasicCredentials = Depends(se
 		response.set_cookie(key="session_token", value=session_token)
 		return RedirectResponse(url='/welcome') 
 
-@app.post('welcome')
+@app.post('/welcome')
 @app.get('/welcome')
-def hello_world():
+def powitanie():
 	return {"message": "jakis powitalny tekst"}
 
 #@app.post('welcome')
