@@ -44,7 +44,7 @@ def login(response: Response, cookie: str = Depends(get_current_user)):
     response.set_cookie(key = 'cookie', value = cookie)
     response.status_code = status.HTTP_302_FOUND
     response.headers["Location"] = '/welcome'
-    return RedirectResponse(url='/welcome')
+    #return RedirectResponse(url='/welcome')
 
 
 @app.post('/logout')
