@@ -56,7 +56,7 @@ def wylogowanie(response: Response):
 		print("wylogowano")
 	return RedirectResponse(url='/')
 
-@app.post('/welcome')
+#@app.post('/welcome')
 @app.get('/welcome')
 def powitanie(request: Request):
 	if len(users)!=1:
