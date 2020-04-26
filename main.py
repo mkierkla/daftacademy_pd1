@@ -22,6 +22,8 @@ templates = Jinja2Templates(directory="templates")
 
 security = HTTPBasic()
 
+#-----------------------funkcje---------------------------------
+
 def get_current_user(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
 	correct_username = secrets.compare_digest(credentials.username, "trudnY")
 	correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
@@ -38,6 +40,15 @@ def get_current_user(response: Response, credentials: HTTPBasicCredentials = Dep
 		app.sessions.clear()
 		app.sessions.append(session_token)
 		return session_token 
+
+def check_if_logged(cookie: str):
+		if cookie not in app.sessions:
+			raise HTTPException(
+				status_code=status.HTTP_401_UNAUTHORIZED,
+				detail="Incorrect email or password",
+			)
+
+#-----------------------endpointy---------------------------------
 
 @app.post('/login')
 def login(response: Response, cookie: str = Depends(get_current_user)):
@@ -62,12 +73,7 @@ def wylogowanie(response: Response):
 #@app.post('/welcome')
 @app.get('/welcome')
 def powitanie(request: Request, response: Response, cookie: str = Cookie(None)):
-	if cookie not in app.sessions:
-		raise HTTPException(
-			status_code=status.HTTP_401_UNAUTHORIZED,
-			detail="Incorrect email or password",
-			headers={"WWW-Authenticate": "Basic"},
-		)
+	check_if_logged(cookie)
 	return templates.TemplateResponse("item.html", {"request": request, "username": users[0]})
 
 @app.post('/')
@@ -92,33 +98,58 @@ async def what_method(request: Request):
 	used_method = request.method
 	return {"method": used_method}
 
+#----------------------pacjenci-----------------------------------
 
 global patients
 patients = []
 
 class wez_pacjent(BaseModel):
 	name: str
-	surename: str
+	surname: str
 
 class daj_pacjent(BaseModel):
 	id: int
 	patient: wez_pacjent
 
-#@app.post('welcome')
+
+
 @app.post('/patient', response_model=daj_pacjent)
-def wyswietl_pacjenta(rq: wez_pacjent):
+def stworz_pacjenta(rq: wez_pacjent, response = Response, cookie: str = Cookie(None)):
+	check_if_logged(cookie)
 	gosciu = daj_pacjent(id=app.counter, patient=rq)
 	patients.append(gosciu)
+	response.status_code = status.HTTP_302_FOUND
+    #response.headers["Location"]=f"/patient/{app.counter}"
 	app.counter += 1
-	return gosciu
+	return RedirectResponse(url='/patient/{app.counter}')
 
+@app.get('/patient')
+def poka_pacjentow(request: Request, response: Response, cookie: str = Cookie(None)):
+	check_if_logged(cookie)
+	if len(patients)==0:
+		raise HTTPException(status_code=401, detail = "brak pacjentow")
+	return patients
 
-@app.post('/patient/{pk}')
+#@app.post('/patient/{pk}')
 @app.get('/patient/{pk}')
 def znajdz_pacjetna(pk: int):
 	if pk not in [ziomek.id for ziomek in patients]:
 		return JSONResponse(status_code = 204, content ={})
 	return patients[pk].patient
+
+
+@app.delete('/patient/{pk}')
+def usun_pacjenta(pk: int):
+	if pk in [ziomek.id for ziomek in patients]:
+		patients.remove(ziomek)
+
+
+
+
+
+
+
+
 
 @app.post('hello/{name}')
 @app.get('hello/{name}')
