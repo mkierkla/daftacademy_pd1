@@ -58,7 +58,7 @@ def wylogowanie(response: Response):
 
 #@app.post('/welcome')
 @app.get('/welcome')
-def powitanie(request: Request, response: Response, cookie: str = Cookie(None)):
+def powitanie(request: Request, response: Response, cookie: str = Cookie()):
 	if cookie not in app.sessions:
 		raise HTTPException(
 			status_code=status.HTTP_401_UNAUTHORIZED,
