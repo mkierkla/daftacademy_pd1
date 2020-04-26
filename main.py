@@ -60,6 +60,11 @@ def wylogowanie(response: Response):
 @app.get('/welcome')
 def powitanie(request: Request):
 	if len(users)!=1:
+		raise HTTPException(
+			status_code=status.HTTP_401_UNAUTHORIZED,
+			detail="Incorrect email or password",
+			headers={"WWW-Authenticate": "Basic"},
+		)
 		print("brak zalogowanych uzytkownikow")
 	else:
 		return templates.TemplateResponse("item.html", {"request": request, "username": users[0]})
