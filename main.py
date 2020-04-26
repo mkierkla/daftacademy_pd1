@@ -59,3 +59,7 @@ def znajdz_pacjetna(pk: int):
 def hello_name(name: str):
 	return f"Hello {name}"
 	
+#pd3 zad1 
+@app.get('/welcome')
+def hello_world():
+	return {"message": "jakis powitalny tekst"}
