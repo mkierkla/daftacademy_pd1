@@ -144,7 +144,7 @@ def usun_pacjenta(pk: int, cookie: str = Cookie(None)):
 	check_if_logged(cookie)
 	if pk in [ziomek.id for ziomek in patients]:
 		patients.pop(pk)
-		raise HTTPException(staus_code=204)
+		raise HTTPException(status_code=HTTP_204_NO_CONTENT)
 
 
 
