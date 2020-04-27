@@ -116,16 +116,16 @@ class daj_pacjent(BaseModel):
 @app.post('/patient', response_model=daj_pacjent) #
 def stworz_pacjenta(rq: wez_pacjent, cookie: str = Cookie(None)):
 	check_if_logged(cookie)
-	pk = app.counter
+	index = app.counter
 	gosciu = daj_pacjent(id=app.counter, patient=rq)
 	patients.append(gosciu)
 	app.counter += 1
 	print(len(patients))
-	return RedirectResponse(url='/patient/%i' % pk)
+	return RedirectResponse(url='/patient/%i' % index)
 
 
 @app.get('/patient')
-def poka_pacjentow(request: Request, response: Response, cookie: str = Cookie(None)):
+def poka_pacjentow(cookie: str = Cookie(None)): #request: Request, response: Response,
 	check_if_logged(cookie)
 	if len(patients)==0:
 		raise HTTPException(status_code=401, detail = "brak pacjentow")
@@ -140,7 +140,8 @@ def znajdz_pacjetna(pk: int):
 
 
 @app.delete('/patient/{pk}')
-def usun_pacjenta(pk: int):
+def usun_pacjenta(pk: int, cookie: str = Cookie(None)):
+	check_if_logged(cookie)
 	if pk in [ziomek.id for ziomek in patients]:
 		patients.pop(pk)
 		raise HTTPException(staus_code=204)
