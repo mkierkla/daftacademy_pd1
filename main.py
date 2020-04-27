@@ -120,6 +120,7 @@ def stworz_pacjenta(rq: wez_pacjent, cookie: str = Cookie(None)):
 	gosciu = daj_pacjent(id=app.counter, patient=rq)
 	patients.append(gosciu)
 	app.counter += 1
+	print(len(patients))
 	return RedirectResponse(url='/patient/%i' % pk)
 
 
@@ -142,6 +143,7 @@ def znajdz_pacjetna(pk: int):
 def usun_pacjenta(pk: int):
 	if pk in [ziomek.id for ziomek in patients]:
 		patients.pop(pk)
+		raise HTTPException(staus_code=204)
 
 
 
