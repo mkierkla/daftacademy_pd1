@@ -113,15 +113,15 @@ class daj_pacjent(BaseModel):
 
 
 
-@app.post('/patient', response_model=daj_pacjent)
-def stworz_pacjenta(rq: wez_pacjent, response = Response, cookie: str = Cookie(None)):
+@app.post('/patient', response_model=daj_pacjent) #
+def stworz_pacjenta(rq: wez_pacjent, cookie: str = Cookie(None)):
 	check_if_logged(cookie)
+	pk = app.counter
 	gosciu = daj_pacjent(id=app.counter, patient=rq)
 	patients.append(gosciu)
-	response.status_code = status.HTTP_302_FOUND
-    #response.headers["Location"]=f"/patient/{app.counter}"
 	app.counter += 1
-	return RedirectResponse(url='/patient/{app.counter}')
+	return RedirectResponse(url='/patient/%i' % pk)
+
 
 @app.get('/patient')
 def poka_pacjentow(request: Request, response: Response, cookie: str = Cookie(None)):
@@ -130,7 +130,7 @@ def poka_pacjentow(request: Request, response: Response, cookie: str = Cookie(No
 		raise HTTPException(status_code=401, detail = "brak pacjentow")
 	return patients
 
-#@app.post('/patient/{pk}')
+@app.post('/patient/{pk}')
 @app.get('/patient/{pk}')
 def znajdz_pacjetna(pk: int):
 	if pk not in [ziomek.id for ziomek in patients]:
@@ -141,13 +141,7 @@ def znajdz_pacjetna(pk: int):
 @app.delete('/patient/{pk}')
 def usun_pacjenta(pk: int):
 	if pk in [ziomek.id for ziomek in patients]:
-		patients.remove(ziomek)
-
-
-
-
-
-
+		patients.pop(pk)
 
 
 
@@ -156,7 +150,6 @@ def usun_pacjenta(pk: int):
 def hello_name(name: str):
 	return f"Hello {name}"
 	
-
 
 
 
