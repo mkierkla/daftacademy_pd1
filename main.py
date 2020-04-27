@@ -140,6 +140,8 @@ def poka_pacjentow(cookie: str = Cookie(None)): #request: Request, response: Res
 @app.post('/patient/{pk}')
 @app.get('/patient/{pk}')
 def znajdz_pacjetna(pk: int):
+	if len(patients)==0:
+		raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
 	if pk not in [ziomek.id for ziomek in patients]:
 		return JSONResponse(status_code = 204, content ={})
 	return patients[pk].patient
@@ -149,10 +151,10 @@ def znajdz_pacjetna(pk: int):
 def usun_pacjenta(pk: int, cookie: str = Cookie(None)):
 	check_if_logged(cookie)
 	if len(patients)==0:
-		raise HTTPException(status_code=HTTP_204_NO_CONTENT)
+		raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
 	if pk in [ziomek.id for ziomek in patients]:
 		patients.pop(pk)
-		
+		#raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
 
 
 
@@ -162,6 +164,6 @@ def hello_name(name: str):
 	return f"Hello {name}"
 	
 
-
+#status_code=status.HTTP_401_UNAUTHORIZED,
 
 	
