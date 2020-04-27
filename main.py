@@ -112,7 +112,6 @@ class daj_pacjent(BaseModel):
 	patient: wez_pacjent
 
 
-
 @app.post('/patient', response_model=daj_pacjent) #
 def stworz_pacjenta(rq: wez_pacjent, cookie: str = Cookie(None)):
 	check_if_logged(cookie)
@@ -129,7 +128,14 @@ def poka_pacjentow(cookie: str = Cookie(None)): #request: Request, response: Res
 	check_if_logged(cookie)
 	if len(patients)==0:
 		raise HTTPException(status_code=401, detail = "brak pacjentow")
-	return patients
+
+	dict_of_patients = {}
+	count = 0
+	for i in patients:
+		dict_of_patients["id_%s" % count] = i.patient
+		count += 1
+
+	return dict_of_patients
 
 @app.post('/patient/{pk}')
 @app.get('/patient/{pk}')
@@ -142,9 +148,11 @@ def znajdz_pacjetna(pk: int):
 @app.delete('/patient/{pk}')
 def usun_pacjenta(pk: int, cookie: str = Cookie(None)):
 	check_if_logged(cookie)
+	if len(patients)==0:
+		raise HTTPException(status_code=HTTP_204_NO_CONTENT)
 	if pk in [ziomek.id for ziomek in patients]:
 		patients.pop(pk)
-		raise HTTPException(status_code=HTTP_204_NO_CONTENT)
+		
 
 
 
