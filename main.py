@@ -131,9 +131,18 @@ async def read_composers(composer_name: str = Query(None)):
 	data = app.db_connection.execute(
 		"SELECT Name FROM tracks WHERE Composer= :composer_name ORDER BY Name",
 		{'composer_name': composer_name}).fetchall()
+
+	traki = []
+	for elem in data:
+		traki.append(elem["Name"])
+
 	if len(data)==0:
-		pass
-	return data
+		raise HTTPException(
+			status_code=404,
+			detail="Composer not in database"
+		)
+
+	return traki
 
 
 #----------------------pacjenci-----------------------------------
