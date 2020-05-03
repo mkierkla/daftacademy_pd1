@@ -118,12 +118,23 @@ async def shutdown():
 
 
 @app.get('/tracks/')
-async def read_param(page: int = Query(0), per_page: int = Query(10)): 
+async def read_tracks(page: int = Query(0), per_page: int = Query(10)): 
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute(
 		"SELECT * FROM tracks ORDER BY TrackId").fetchall()
 	current_tracks = data[per_page*page:per_page*(page+1)]
 	return current_tracks
+
+@app.get('/tracks/composers')
+async def read_composers(composer_name: str = Query(None)):
+	app.db_connection.row_factory = sqlite3.Row
+	data = app.db_connection.execute(
+		"SELECT Name FROM tracks WHERE Composer= :composer_name ORDER BY Name",
+		{'composer_name': composer_name}).fetchall()
+	if len(data)==0:
+		pass
+	return data
+
 
 #----------------------pacjenci-----------------------------------
 
