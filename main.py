@@ -1,6 +1,9 @@
 import secrets
 
-from fastapi import FastAPI, Request, Response, Depends, status, HTTPException, Cookie
+import aiosqlite
+import sqlite3
+
+from fastapi import FastAPI, Request, Response, Depends, status, HTTPException, Cookie, Query
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -8,6 +11,9 @@ from fastapi.templating import Jinja2Templates
 from starlette.routing import Route
 from pydantic import BaseModel
 from hashlib import sha256
+
+
+
 
 
 
@@ -97,6 +103,27 @@ async def what_method(request: Request):
 async def what_method(request: Request):
 	used_method = request.method
 	return {"method": used_method}
+
+
+#--------------------SQL------------------------------------------
+
+@app.on_event("startup")
+async def startup():
+    app.db_connection = sqlite3.connect('chinook/chinook.db')
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    app.db_connection.close()
+
+
+@app.get('/tracks/')
+async def read_param(page: int = Query(0), per_page: int = Query(10)): 
+	app.db_connection.row_factory = sqlite3.Row
+	data = app.db_connection.execute(
+		"SELECT * FROM tracks LIMIT :per_page", {'per_page': per_page}).fetchall() #ORDER BY TrackId
+	current_track = data[page]
+	return current_track
 
 #----------------------pacjenci-----------------------------------
 
