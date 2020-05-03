@@ -137,9 +137,14 @@ async def read_composers(composer_name: str = Query(None)):
 		traki.append(elem["Name"])
 
 	if len(data)==0:
+		blad = {
+    			"detail": {
+        					"error": "Composer not in database"
+    						}
+				}
 		raise HTTPException(
 			status_code=404,
-			detail="Composer not in database"
+			detail= blad
 		)
 
 	return traki
