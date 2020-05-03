@@ -121,7 +121,7 @@ async def shutdown():
 async def read_param(page: int = Query(0), per_page: int = Query(10)): 
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute(
-		"SELECT * FROM tracks LIMIT :per_page", {'per_page': per_page}).fetchall() #ORDER BY TrackId
+		"SELECT * FROM tracks ORDER BY TrackId").fetchall() #
 	current_track = data[page]
 	return current_track
 
