@@ -109,7 +109,7 @@ async def what_method(request: Request):
 
 @app.on_event("startup")
 async def startup():
-    app.db_connection = sqlite3.connect('chinook/chinook — kopia.db')
+    app.db_connection = sqlite3.connect('chinook/chinook.db')
 
 
 @app.on_event("shutdown")
