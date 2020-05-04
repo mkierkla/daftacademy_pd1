@@ -148,7 +148,7 @@ async def read_composers(composer_name: str = Query(None)):
 async def read_albums(album_id:int, artist_id: int = Query(0)):
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId=:album_id", {"album_id": album_id}).fetchall()
-	return data
+	return data[0]
 
 class album_info(BaseModel):
 	title: str
