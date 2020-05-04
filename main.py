@@ -247,7 +247,7 @@ async def get_sales(category: str = Query('customers')):
 				dane["CustomerId"] = y['CustomerId']
 				dane["Email"] = y["Email"]
 				dane["Phone"] = y["Phone"]
-				dane["Sum"] = str(round(x['suma'],2))
+				dane["Sum"] = float(round(x['suma'],2))
 				lista.append(dane)
 	return lista
 
