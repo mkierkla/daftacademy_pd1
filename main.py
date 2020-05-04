@@ -144,10 +144,10 @@ async def read_composers(composer_name: str = Query(None)):
 
 	return traki
 
-@app.get('/check_albums')
-async def read_albums(artist_id: int = Query(0)):
+@app.get('/albums/{album_id}')
+async def read_albums(album_id:int, artist_id: int = Query(0)):
 	app.db_connection.row_factory = sqlite3.Row
-	data = app.db_connection.execute("SELECT * FROM albums WHERE ArtistId=:artist_id", {"artist_id": artist_id}).fetchall()
+	data = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId=:album_id", {"album_id": album_id}).fetchall()
 	return data
 
 class album_info(BaseModel):
@@ -161,8 +161,7 @@ class albums_entry:
 
 @app.post('/albums') #, response_model=albums_entry
 async def create_album(album_rq: album_info):
-	
-	#conn = sqlite3.connect('chinook/chinook — kopia.db')
+
 	app.db_connection.row_factory = sqlite3.Row
 
 	check_artist = app.db_connection.execute("SELECT Name FROM artists WHERE ArtistId=:artistId", 
@@ -181,9 +180,9 @@ async def create_album(album_rq: album_info):
 
 		temp = albums_entry()
 		for elem in get_data:
-			albums_entry.AlbumId = elem["AlbumId"]
-			albums_entry.Title = elem["Title"]
-			albums_entry.ArtistId = elem["ArtistId"]
+			temp.AlbumId = elem["AlbumId"]
+			temp.Title = elem["Title"]
+			temp.ArtistId = elem["ArtistId"]
 
 		if get_data!=None:
 			return JSONResponse(
