@@ -205,7 +205,7 @@ async def create_album(album_rq: album_info):
 		)
 
 @app.put('/customers/{customer_id}')
-async def update_customer(customer_id:int = Query(1), updated_rq: customer_info):
+async def update_customer(updated_rq: customer_info, customer_id:int = Query(1)):
 	app.db_connection.row_factory = sqlite3.Row
 
 	check_customer = app.db_connection.execute("SELECT FirstName FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
