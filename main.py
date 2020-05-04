@@ -220,7 +220,7 @@ async def update_customer(customer_id:int, updated_rq: customer_info):
 			print(sql_text)
 			update = app.db_connection.execute(sql_text)
 			app.db_connection.commit()
-		data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchall()
+		data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
 		return data
 	else:
 		raise HTTPException(
