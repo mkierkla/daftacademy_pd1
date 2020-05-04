@@ -205,11 +205,12 @@ async def create_album(album_rq: album_info):
 		)
 
 @app.put('/customers/{customer_id}')
-async def update_customer(customer_id:int, updated_info: customer_info):
+async def update_customer(customer_id:int, updated_rq: customer_info):
 	app.db_connection.row_factory = sqlite3.Row
-	check_customer = app.db_connection.execute("SELECT FirstName FROM customers WHERE CustomerId=:customer_id", {"CustomerId": customer_id}).fetchone()
+
+	check_customer = app.db_connection.execute("SELECT FirstName FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
 	if check_customer!=None:
-		for key, value in updated_info.items():
+		for key, value in updated_info.__dict__.items():
 			update = app.db_connection.execute("UPDATE customers SET :key = :value WHERE CustomerID = :customer_id",
 				{"key": key.capitalize(),"value": value , "customer_id": customer_id})
 			app.db_connection.commit()
