@@ -159,6 +159,15 @@ class albums_entry:
 	Title: str
 	ArtistId: str
 
+class customer_info(BaseModel):
+	company: str 
+	address: str
+	city: str
+	state: str
+	country: str
+	postalcode: str
+	fax: str
+
 @app.post('/albums') #, response_model=albums_entry
 async def create_album(album_rq: album_info):
 
@@ -195,6 +204,22 @@ async def create_album(album_rq: album_info):
 			detail= {"error": "ArtistId not in database"}
 		)
 
+@app.put('/customers/{customer_id}')
+async def update_customer(updated_info: customer_info):
+	app.db_connection.row_factory = sqlite3.Row
+	check_customer = app.db_connection.execute("SELECT Name FROM customers WHERE CustomerId=:customer_id", {"CustomerId": customer_id}).fetchone()
+	if check_customer!=None:
+		for key, value in updated_info.items():
+			update = app.db_connection.execute("UPDATE customers SET :key = :value WHERE CustomerID = :customer_id",
+				{"key": key.capitalize(),"value": value , "customer_id": customer_id})
+			app.db_connection.commit()
+		data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"CustomerId": customer_id}).fetchone()
+		return data[0]
+	else:
+		raise HTTPException(
+			status_code=404,
+			detail= {"error": "CustomerId not in database"}
+		)
 #----------------------pacjenci-----------------------------------
 
 global patients
