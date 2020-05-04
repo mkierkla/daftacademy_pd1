@@ -205,29 +205,21 @@ async def create_album(album_rq: album_info):
 		)
 
 @app.put('/customers/{customer_id}')
-async def update_customer(updated_rq: customer_info, customer_id:int = Query(1)):
+async def update_customer(customer_id:int, updated_rq: customer_info):
 	app.db_connection.row_factory = sqlite3.Row
 
 	check_customer = app.db_connection.execute("SELECT FirstName FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
 	if check_customer!=None:
-		for key, value in updated_rq.__dict__.items():
-			if value != None:
-				if key == 'postalcode':
-					temp_key = 'PostalCode'
-				else:
-					temp_key = key.capitalize()
-				sql_text = "UPDATE customers SET " + str(temp_key) + " = '" + str(value) + "' WHERE CustomerID = " + str(customer_id)
-				print(sql_text)
-				update = app.db_connection.execute(sql_text)
-				app.db_connection.commit()
-				data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
-				if data!=None:
-					return data
-				else:
-					raise HTTPException(
-						status_code=404,
-						detail= {"error": "CustomerId not in database"}
-					)
+		filtered = {k: v for k, v in updated_rq.__dict__.items() if v is not None}
+		#print (filtered.items())
+		for key, value in filtered.items():
+			temp_key = key.capitalize()
+			sql_text = "UPDATE customers SET " + str(temp_key) + " = '" + str(value) + "' WHERE CustomerID = " + str(customer_id)
+			#print(sql_text)
+			update = app.db_connection.execute(sql_text)
+			app.db_connection.commit()
+		data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
+		return data
 	else:
 		raise HTTPException(
 			status_code=404,
