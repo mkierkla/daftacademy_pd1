@@ -210,12 +210,16 @@ async def update_customer(customer_id:int, updated_rq: customer_info):
 
 	check_customer = app.db_connection.execute("SELECT FirstName FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
 	if check_customer!=None:
-		for key, value in updated_info.__dict__.items():
-			update = app.db_connection.execute("UPDATE customers SET :key = :value WHERE CustomerID = :customer_id",
-				{"key": key.capitalize(),"value": value , "customer_id": customer_id})
+		for key, value in updated_rq.__dict__.items():
+			print(key.capitalize(), value)
+			sql_text = "UPDATE customers SET " + str(key.capitalize()) + " = '" + str(value) + "' WHERE CustomerID = " + str(customer_id)
+			print(sql_text)
+			#update = app.db_connection.execute("UPDATE customers SET :key = :value WHERE CustomerID = :customer_id",
+				#{"key": key.capitalize(),"value": value , "customer_id": customer_id})
+			update = app.db_connection.execute(sql_text)
 			app.db_connection.commit()
-		data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"CustomerId": customer_id}).fetchone()
-		return data[0]
+		data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
+		return data
 	else:
 		raise HTTPException(
 			status_code=404,
