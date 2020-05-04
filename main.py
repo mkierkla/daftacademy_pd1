@@ -229,6 +229,11 @@ async def update_customer(customer_id:int, updated_rq: customer_info):
 
 @app.get('/sales')
 async def get_sales(category: str = Query('customers')):
+	if category not in ['customers']:
+		raise HTTPException(
+			status_code=404,
+			detail= {"error": "Category without statistics"}
+		)
 	app.db_connection.row_factory = sqlite3.Row
 	get_sums = app.db_connection.execute(
 		"SELECT CustomerId, SUM(Total) as suma FROM invoices GROUP BY CustomerId ORDER BY suma DESC").fetchall()
