@@ -237,20 +237,20 @@ async def get_sales(category: str = Query(None)):
 	app.db_connection.row_factory = sqlite3.Row
 	get_data = app.db_connection.execute("SELECT customers.CustomerId, customers.Email, customers.Phone, ROUND(SUM(invoices.Total),4) as Sum FROM invoices INNER JOIN customers ON invoices.CustomerId = customers.CustomerId GROUP BY customers.CustomerId ORDER BY Sum DESC"
 		).fetchall()
-
+	'''
 	get_sums = app.db_connection.execute(
 		"SELECT CustomerId, SUM(Total) as suma FROM invoices GROUP BY CustomerId ORDER BY suma DESC").fetchall()
 	get_customers = app.db_connection.execute("SELECT CustomerId, Email, Phone FROM customers").fetchall()
 	
 	lista = []
-		for y in get_data:
-			dane = {}
-			dane["CustomerId"] = int(y['CustomerId'])
-			dane["Email"] = y["Email"]
-			dane["Phone"] = y["Phone"]
-			dane["Sum"] = float(round(y['suma'],2))
-			lista.append(dane)
-			
+	for y in get_data:
+		dane = {}
+		dane["CustomerId"] = int(y['CustomerId'])
+		dane["Email"] = y["Email"]
+		dane["Phone"] = y["Phone"]
+		dane["Sum"] = float(round(y['suma'],2))
+		lista.append(dane)
+	'''		
 	return get_data
 
 
