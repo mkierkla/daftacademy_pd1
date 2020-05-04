@@ -168,7 +168,7 @@ async def read_albums(album_id:int):
 	data = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId=:album_id", {"album_id": album_id}).fetchall()
 	return data[0]
 
-@app.post('/albums') #, response_model=albums_entry
+@app.post('/albums')
 async def create_album(album_rq: album_info):
 
 	app.db_connection.row_factory = sqlite3.Row
@@ -205,13 +205,12 @@ async def create_album(album_rq: album_info):
 		)
 
 @app.put('/customers/{customer_id}')
-async def update_customer(customer_id:int, updated_rq: customer_info):
+async def update_customer(customer_id:int = Query(1), updated_rq: customer_info):
 	app.db_connection.row_factory = sqlite3.Row
 
 	check_customer = app.db_connection.execute("SELECT FirstName FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
 	if check_customer!=None:
 		for key, value in updated_rq.__dict__.items():
-			#print(key.capitalize(), value)
 			if key == 'postalcode':
 				temp_key = 'PostalCode'
 			else:
@@ -221,13 +220,13 @@ async def update_customer(customer_id:int, updated_rq: customer_info):
 			update = app.db_connection.execute(sql_text)
 			app.db_connection.commit()
 		data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
-		if data==None:
+		if data!=None:
+			return data
+		else:
 			raise HTTPException(
 				status_code=404,
 				detail= {"error": "CustomerId not in database"}
 			)
-		else:
-			return data
 	else:
 		raise HTTPException(
 			status_code=404,
