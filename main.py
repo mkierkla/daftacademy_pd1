@@ -109,7 +109,7 @@ async def what_method(request: Request):
 
 @app.on_event("startup")
 async def startup():
-    app.db_connection = sqlite3.connect('chinook/chinook.db')
+    app.db_connection = sqlite3.connect('chinook/chinook — kopia.db')
 
 
 @app.on_event("shutdown")
@@ -144,6 +144,36 @@ async def read_composers(composer_name: str = Query(None)):
 
 	return traki
 
+class album_info(BaseModel):
+	title: str
+	artist_id: int
+
+@app.post('/albums')
+def create_album(album_rq: album_info):
+	
+	conn = sqlite3.connect('chinook/chinook — kopia.db')
+	conn.row_factory = sqlite3.Row
+
+	check_artist = conn.execute("SELECT Name FROM artists WHERE ArtistId=:artistId", 
+		{"artistId": album_rq.artist_id}).fetchone()
+	#print(check_artist)
+	if check_artist!=None:
+
+		inserted_data = conn.execute("INSERT INTO albums (Title, ArtistId) VALUES (:title, :artistId)",
+			{"title": album_rq.title, "artistId": album_rq.artist_id})
+		conn.commit()
+		new_album_id=inserted_data.lastrowid
+
+		#conn.row_factory = sqlite3.Row
+
+		get_data = conn.execute("SELECT * FROM albums WHERE AlbumId=:new_album_id",{"new_album_id": new_album_id}).fetchone()
+		raise HTTPException(status_code=201)
+		return get_data
+	else:
+		raise HTTPException(
+			status_code=404,
+			detail= {"error": "ArtistId not in database"}
+		)
 
 #----------------------pacjenci-----------------------------------
 
