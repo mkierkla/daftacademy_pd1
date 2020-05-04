@@ -228,7 +228,7 @@ async def update_customer(customer_id:int, updated_rq: customer_info):
 
 
 @app.get('/sales')
-async def get_sales(category: str = Query('customers')):
+async def get_sales(category: str = Query(None)):
 	if category not in ['customers']:
 		raise HTTPException(
 			status_code=404,
@@ -238,8 +238,8 @@ async def get_sales(category: str = Query('customers')):
 	get_sums = app.db_connection.execute(
 		"SELECT CustomerId, SUM(Total) as suma FROM invoices GROUP BY CustomerId ORDER BY suma DESC").fetchall()
 	get_customers = app.db_connection.execute("SELECT CustomerId, Email, Phone FROM customers").fetchall()
-	lista = []
 	
+	lista = []
 	for x in get_sums:
 		for y in get_customers:
 			if x['CustomerId']==y['CustomerId']:
