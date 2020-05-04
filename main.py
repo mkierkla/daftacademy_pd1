@@ -211,9 +211,7 @@ async def update_customer(updated_rq: customer_info, customer_id:int = Query(1))
 	check_customer = app.db_connection.execute("SELECT FirstName FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
 	if check_customer!=None:
 		for key, value in updated_rq.__dict__.items():
-			if value == None:
-				pass
-			else:
+			if value != None:
 				if key == 'postalcode':
 					temp_key = 'PostalCode'
 				else:
