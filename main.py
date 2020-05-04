@@ -144,7 +144,7 @@ async def read_composers(composer_name: str = Query(None)):
 
 	return traki
 
-@app.get('/albums')
+@app.get('/check_albums')
 async def read_albums(artist_id: int = Query(0)):
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute("SELECT * FROM albums WHERE ArtistId=:artist_id", {"artist_id": artist_id}).fetchall()
@@ -168,14 +168,15 @@ async def create_album(album_rq: album_info):
 		inserted_data = app.db_connection.execute("INSERT INTO albums (Title, ArtistId) VALUES (:title, :artistId)",
 			{"title": album_rq.title, "artistId": album_rq.artist_id})
 		app.db_connection.commit()
+		raise HTTPException(status_code=201)
 
 		new_album_id=inserted_data.lastrowid
+		app.db_connection.row_factory = sqlite3.Row
 		get_data = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId=:new_album_id", {"new_album_id": new_album_id}).fetchall()
 		
 		if get_data!=None:
 			#print(get_data)
 			return get_data[0]
-			raise HTTPException(status_code=201)
 	else:
 		raise HTTPException(
 			status_code=404,
