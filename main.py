@@ -211,11 +211,13 @@ async def update_customer(customer_id:int, updated_rq: customer_info):
 	check_customer = app.db_connection.execute("SELECT FirstName FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
 	if check_customer!=None:
 		for key, value in updated_rq.__dict__.items():
-			print(key.capitalize(), value)
-			sql_text = "UPDATE customers SET " + str(key.capitalize()) + " = '" + str(value) + "' WHERE CustomerID = " + str(customer_id)
+			#print(key.capitalize(), value)
+			if key == 'postalcode':
+				temp_key = 'PostalCode'
+			else:
+				temp_key = key.capitalize()
+			sql_text = "UPDATE customers SET " + str(temp_key) + " = '" + str(value) + "' WHERE CustomerID = " + str(customer_id)
 			print(sql_text)
-			#update = app.db_connection.execute("UPDATE customers SET :key = :value WHERE CustomerID = :customer_id",
-				#{"key": key.capitalize(),"value": value , "customer_id": customer_id})
 			update = app.db_connection.execute(sql_text)
 			app.db_connection.commit()
 		data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
