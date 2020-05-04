@@ -144,12 +144,6 @@ async def read_composers(composer_name: str = Query(None)):
 
 	return traki
 
-@app.get('/albums/{album_id}')
-async def read_albums(album_id:int, artist_id: int = Query(0)):
-	app.db_connection.row_factory = sqlite3.Row
-	data = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId=:album_id", {"album_id": album_id}).fetchall()
-	return data[0]
-
 class album_info(BaseModel):
 	title: str
 	artist_id: int = 1
@@ -160,13 +154,19 @@ class albums_entry:
 	ArtistId: str
 
 class customer_info(BaseModel):
-	company: str 
-	address: str
-	city: str
-	state: str
-	country: str
-	postalcode: str
-	fax: str
+	company: str = None
+	address: str = None
+	city: str = None
+	state: str = None
+	country: str = None
+	postalcode: str = None
+	fax: str = None
+
+@app.get('/albums/{album_id}')
+async def read_albums(album_id:int):
+	app.db_connection.row_factory = sqlite3.Row
+	data = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId=:album_id", {"album_id": album_id}).fetchall()
+	return data[0]
 
 @app.post('/albums') #, response_model=albums_entry
 async def create_album(album_rq: album_info):
@@ -205,9 +205,9 @@ async def create_album(album_rq: album_info):
 		)
 
 @app.put('/customers/{customer_id}')
-async def update_customer(updated_info: customer_info):
+async def update_customer(customer_id:int, updated_info: customer_info):
 	app.db_connection.row_factory = sqlite3.Row
-	check_customer = app.db_connection.execute("SELECT Name FROM customers WHERE CustomerId=:customer_id", {"CustomerId": customer_id}).fetchone()
+	check_customer = app.db_connection.execute("SELECT FirstName FROM customers WHERE CustomerId=:customer_id", {"CustomerId": customer_id}).fetchone()
 	if check_customer!=None:
 		for key, value in updated_info.items():
 			update = app.db_connection.execute("UPDATE customers SET :key = :value WHERE CustomerID = :customer_id",
