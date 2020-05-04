@@ -144,31 +144,38 @@ async def read_composers(composer_name: str = Query(None)):
 
 	return traki
 
+@app.get('/albums')
+async def read_albums(artist_id: int = Query(0)):
+	app.db_connection.row_factory = sqlite3.Row
+	data = app.db_connection.execute("SELECT * FROM albums WHERE ArtistId=:artist_id", {"artist_id": artist_id}).fetchall()
+	return data
+
 class album_info(BaseModel):
 	title: str
 	artist_id: int
 
 @app.post('/albums')
-def create_album(album_rq: album_info):
+async def create_album(album_rq: album_info):
 	
-	conn = sqlite3.connect('chinook/chinook — kopia.db')
-	conn.row_factory = sqlite3.Row
+	#conn = sqlite3.connect('chinook/chinook — kopia.db')
+	app.db_connection.row_factory = sqlite3.Row
 
-	check_artist = conn.execute("SELECT Name FROM artists WHERE ArtistId=:artistId", 
+	check_artist = app.db_connection.execute("SELECT Name FROM artists WHERE ArtistId=:artistId", 
 		{"artistId": album_rq.artist_id}).fetchone()
-	#print(check_artist)
+
 	if check_artist!=None:
 
-		inserted_data = conn.execute("INSERT INTO albums (Title, ArtistId) VALUES (:title, :artistId)",
+		inserted_data = app.db_connection.execute("INSERT INTO albums (Title, ArtistId) VALUES (:title, :artistId)",
 			{"title": album_rq.title, "artistId": album_rq.artist_id})
-		conn.commit()
+		app.db_connection.commit()
+
 		new_album_id=inserted_data.lastrowid
-
-		#conn.row_factory = sqlite3.Row
-
-		get_data = conn.execute("SELECT * FROM albums WHERE AlbumId=:new_album_id",{"new_album_id": new_album_id}).fetchone()
-		raise HTTPException(status_code=201)
-		return get_data
+		get_data = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId=:new_album_id", {"new_album_id": new_album_id}).fetchall()
+		
+		if get_data!=None:
+			#print(get_data)
+			return get_data[0]
+			raise HTTPException(status_code=201)
 	else:
 		raise HTTPException(
 			status_code=404,
