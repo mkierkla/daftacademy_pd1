@@ -211,22 +211,25 @@ async def update_customer(updated_rq: customer_info, customer_id:int = Query(1))
 	check_customer = app.db_connection.execute("SELECT FirstName FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
 	if check_customer!=None:
 		for key, value in updated_rq.__dict__.items():
-			if key == 'postalcode':
-				temp_key = 'PostalCode'
+			if value == None:
+				pass
 			else:
-				temp_key = key.capitalize()
-			sql_text = "UPDATE customers SET " + str(temp_key) + " = '" + str(value) + "' WHERE CustomerID = " + str(customer_id)
-			print(sql_text)
-			update = app.db_connection.execute(sql_text)
-			app.db_connection.commit()
-		data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
-		if data!=None:
-			return data
-		else:
-			raise HTTPException(
-				status_code=404,
-				detail= {"error": "CustomerId not in database"}
-			)
+				if key == 'postalcode':
+					temp_key = 'PostalCode'
+				else:
+					temp_key = key.capitalize()
+				sql_text = "UPDATE customers SET " + str(temp_key) + " = '" + str(value) + "' WHERE CustomerID = " + str(customer_id)
+				print(sql_text)
+				update = app.db_connection.execute(sql_text)
+				app.db_connection.commit()
+				data = app.db_connection.execute("SELECT * FROM customers WHERE CustomerId=:customer_id", {"customer_id": customer_id}).fetchone()
+				if data!=None:
+					return data
+				else:
+					raise HTTPException(
+						status_code=404,
+						detail= {"error": "CustomerId not in database"}
+					)
 	else:
 		raise HTTPException(
 			status_code=404,
