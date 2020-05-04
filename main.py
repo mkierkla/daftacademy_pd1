@@ -226,6 +226,27 @@ async def update_customer(customer_id:int, updated_rq: customer_info):
 			detail= {"error": "CustomerId not in database"}
 		)
 
+
+@app.get('/sales')
+async def get_sales(category: str = Query('customers')):
+	app.db_connection.row_factory = sqlite3.Row
+	get_sums = app.db_connection.execute(
+		"SELECT CustomerId, SUM(Total) as suma FROM invoices GROUP BY CustomerId ORDER BY suma DESC").fetchall()
+	get_customers = app.db_connection.execute("SELECT CustomerId, Email, Phone FROM customers").fetchall()
+	lista = []
+	
+	for x in get_sums:
+		for y in get_customers:
+			if x['CustomerId']==y['CustomerId']:
+				dane = {}
+				dane["CustomerId"] = y['CustomerId']
+				dane["Email"] = y["Email"]
+				dane["Phone"] = y["Phone"]
+				dane["Sum"] = str(round(x['suma'],2))
+				lista.append(dane)
+	return lista
+
+
 #----------------------pacjenci-----------------------------------
 
 global patients
