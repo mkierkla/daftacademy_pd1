@@ -237,13 +237,13 @@ async def get_sales(category: str = Query(None)):
 	if category == 'customers':
 		app.db_connection.row_factory = sqlite3.Row
 		get_data = app.db_connection.execute(
-			"SELECT customers.CustomerId, customers.Email, customers.Phone, ROUND(SUM(invoices.Total),4) as Sum FROM invoices INNER JOIN customers ON invoices.CustomerId = customers.CustomerId GROUP BY customers.CustomerId ORDER BY Sum DESC").fetchall()
+			"SELECT customers.CustomerId, customers.Email, customers.Phone, ROUND(SUM(invoices.Total),4) as Sum FROM invoices INNER JOIN customers ON invoices.CustomerId = customers.CustomerId GROUP BY customers.CustomerId ORDER BY Sum DESC"
+			).fetchall()
 		return get_data
-
 	if category == 'genres':
 		app.db_connection.row_factory = sqlite3.Row
 		get_data = app.db_connection.execute(
-			"SELECT (SELECT genres.Name FROM genres WHERE tracks.GenreId=genres.GenreId) as Name, ROUND(SUM(invoice_items.UnitPrice),4) as Sum FROM tracks INNER JOIN invoice_items ON tracks.TrackId = invoice_items.TrackId GROUP BY tracks.GenreId ORDER BY Sum DESC"
+			"SELECT (SELECT genres.Name FROM genres WHERE tracks.GenreId=genres.GenreId) as Name, SUM(invoice_items.UnitPrice) as Sum FROM tracks INNER JOIN invoice_items ON tracks.TrackId = invoice_items.TrackId GROUP BY tracks.GenreId ORDER BY Sum DESC"
 			).fetchall()
 		return get_data
 
