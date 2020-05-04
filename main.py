@@ -244,7 +244,7 @@ async def get_sales(category: str = Query('customers')):
 		for y in get_customers:
 			if x['CustomerId']==y['CustomerId']:
 				dane = {}
-				dane["CustomerId"] = y['CustomerId']
+				dane["CustomerId"] = int(y['CustomerId'])
 				dane["Email"] = y["Email"]
 				dane["Phone"] = y["Phone"]
 				dane["Sum"] = float(round(x['suma'],2))
