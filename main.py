@@ -245,7 +245,10 @@ async def get_sales(category: str = Query(None)):
 		get_data = app.db_connection.execute(
 			"SELECT (SELECT genres.Name FROM genres WHERE tracks.GenreId=genres.GenreId) as Name, ROUND(SUM(invoice_items.UnitPrice),4) as Sum FROM tracks INNER JOIN invoice_items ON tracks.TrackId = invoice_items.TrackId GROUP BY tracks.GenreId ORDER BY Sum DESC"
 			).fetchall()
-		return get_data
+		lista = []
+		for elem in get_data:
+			lista.append(elem)
+		return lista
 
 
 #----------------------pacjenci-----------------------------------
