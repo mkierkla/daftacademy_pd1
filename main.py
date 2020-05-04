@@ -152,9 +152,14 @@ async def read_albums(artist_id: int = Query(0)):
 
 class album_info(BaseModel):
 	title: str
-	artist_id: int
+	artist_id: int = 1
 
-@app.post('/albums')
+class albums_entry:
+	AlbumId: int
+	Title: str
+	ArtistId: str
+
+@app.post('/albums') #, response_model=albums_entry
 async def create_album(album_rq: album_info):
 	
 	#conn = sqlite3.connect('chinook/chinook — kopia.db')
@@ -168,15 +173,23 @@ async def create_album(album_rq: album_info):
 		inserted_data = app.db_connection.execute("INSERT INTO albums (Title, ArtistId) VALUES (:title, :artistId)",
 			{"title": album_rq.title, "artistId": album_rq.artist_id})
 		app.db_connection.commit()
-		raise HTTPException(status_code=201)
+		
 
 		new_album_id=inserted_data.lastrowid
 		app.db_connection.row_factory = sqlite3.Row
 		get_data = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId=:new_album_id", {"new_album_id": new_album_id}).fetchall()
-		
+
+		temp = albums_entry()
+		for elem in get_data:
+			albums_entry.AlbumId = elem["AlbumId"]
+			albums_entry.Title = elem["Title"]
+			albums_entry.ArtistId = elem["ArtistId"]
+
 		if get_data!=None:
-			#print(get_data)
-			return get_data[0]
+			return JSONResponse(
+				status_code=201,
+				content = {"AlbumId": temp.AlbumId, "Title": temp.Title, "ArtistId": temp.ArtistId}
+			)	
 	else:
 		raise HTTPException(
 			status_code=404,
