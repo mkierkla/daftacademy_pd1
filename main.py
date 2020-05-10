@@ -325,6 +325,5 @@ def hello_name(name: str):
 	return f"Hello {name}"
 	
 
-#status_code=status.HTTP_401_UNAUTHORIZED,
 
 	
