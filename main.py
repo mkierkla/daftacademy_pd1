@@ -245,7 +245,18 @@ async def get_sales(category: str = Query(None)):
 		get_data = app.db_connection.execute(
 			"SELECT (SELECT genres.Name FROM genres WHERE tracks.GenreId=genres.GenreId) as Name, ROUND(SUM(invoice_items.UnitPrice*invoice_items.Quantity),4) as Sum FROM tracks LEFT JOIN invoice_items ON tracks.TrackId = invoice_items.TrackId GROUP BY tracks.GenreId ORDER BY Sum DESC"
 			).fetchall()
-		return get_data
+
+		results_dict = []
+		for elem in get_data:
+			temp = {}
+			temp["Name"] = elem["Name"]
+			if type(elem["Sum"])!=float:
+				temp["Sum"] = 0
+			else:
+				temp["Sum"] = elem["Sum"]
+			results_dict.append(temp)
+
+		return results_dict
 
 
 #----------------------pacjenci-----------------------------------
