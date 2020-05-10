@@ -256,7 +256,7 @@ async def get_sales(category: str = Query(None)):
 				temp["Sum"] = elem["Sum"]
 			results_dict.append(temp)
 
-		return results_dict
+		return get_data
 
 
 #----------------------pacjenci-----------------------------------
