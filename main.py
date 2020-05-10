@@ -237,7 +237,7 @@ async def get_sales(category: str = Query(None)):
 	if category == 'customers':
 		app.db_connection.row_factory = sqlite3.Row
 		get_data = app.db_connection.execute(
-			"SELECT customers.CustomerId, customers.Email, customers.Phone, ROUND(SUM(invoices.Total),4) as Sum FROM invoices INNER JOIN customers ON invoices.CustomerId = customers.CustomerId GROUP BY customers.CustomerId ORDER BY Sum DESC"
+			"SELECT genres.name, SUM(quantity) as Sum FROM invoice_items JOIN genres ON tracks.genreid = genres.genreid JOIN tracks ON invoice_items.trackid = tracks.trackid GROUP BY tracks.genreid ORDER BY Sum DESC, genres.name"
 			).fetchall()
 		return get_data
 	if category == 'genres':
